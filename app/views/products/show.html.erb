@@ -6,5 +6,13 @@
   
 </p>
 
+<ul>
+  <% @product.images.each do |image| %>
+    <li>
+      <img src="<%=url_for(image.image)%>">
+    </li>
+  <% end %>
+</ul>
+
 <%= link_to 'Edit', edit_product_path(@product) %> |
 <%= link_to 'Back', products_path %>
