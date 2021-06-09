@@ -11,6 +11,10 @@
     <li>
       <img src="<%=url_for(image.image)%>">
     </li>
+    <li>
+    <% key=image.image.blob.key%>
+    ./storage/<%=key[0,2] %>/<%=key[2,2]%>/<%= key%>
+    </li>
   <% end %>
 </ul>
 
