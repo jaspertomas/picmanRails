@@ -11,12 +11,9 @@
     <li>
       <img src="<%=url_for(image.image)%>">
     </li>
-    <li>
-    <% key=image.image.blob.key%>
-    ./storage/<%=key[0,2] %>/<%=key[2,2]%>/<%= key%>
-    </li>
   <% end %>
 </ul>
 
+<%= link_to 'Convert', convert_product_path(@product) %> |
 <%= link_to 'Edit', edit_product_path(@product) %> |
 <%= link_to 'Back', products_path %>

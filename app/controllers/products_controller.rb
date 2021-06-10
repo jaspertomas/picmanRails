@@ -1,5 +1,5 @@
 class ProductsController < ApplicationController
-  before_action :set_product, only: %i[ show edit update destroy ]
+  before_action :set_product, only: %i[ show edit update destroy convert]
 
   # GET /products or /products.json
   def index
@@ -56,6 +56,21 @@ class ProductsController < ApplicationController
     end
   end
 
+  def convert
+    rails_path= Dir.pwd
+    image=@product.images[0]
+    key=image.image.blob.key
+    path=rails_path+"/storage/"+key[0,2]+"/"+key[2,2]+"/"+key
+    #path = d:/src/picmanRails/storage/6a/3w/6a3wn80hov9h1nx3pct9qrli8ynk
+print("cd D:\\src\\image-background-remove-tool & python3 main.py -i "+path+" -o .\\docs\\imgss\\outputt\\ -m u2net")
+    s=system("cd D:\\src\\image-background-remove-tool & python3 main.py -i "+path+" -o .\\docs\\imgss\\outputt\\ -m u2net")
+    # print(s)
+
+    # return render json: {success: true, message: "hello world!"}
+    return render json: "hello world!"
+
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_product
@@ -66,4 +81,6 @@ class ProductsController < ApplicationController
     def product_params
       params.require(:product).permit(:name, :image)
     end
+
+
 end
