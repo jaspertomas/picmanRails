@@ -60,21 +60,21 @@ class ProductsController < ApplicationController
     #formulate source image path
     rails_path= Dir.pwd
     image=@product.images[0]
-    key=image.image.blob.key
-    path=rails_path+"/storage/"+key[0,2]+"/"+key[2,2]+"/"+key
+    filename=image.image.blob.key
+    path=rails_path+"/storage/"+filename[0,2]+"/"+filename[2,2]+"/"+filename
     #path = d:/src/picmanRails/storage/6a/3w/6a3wn80hov9h1nx3pct9qrli8ynk
 
     # remove background from source image
     success=system("cd D:\\src\\image-background-remove-tool & python3 main.py -i "+path+" -o .\\docs\\imgss\\outputt\\ -m u2net")
-    
     if(success)
       # attach image with background removed
-      @product.gen_image_from_path(path:"D:\\src\\image-background-remove-tool\\docs\\imgss\\outputt\\6a3wn80hov9h1nx3pct9qrli8ynk.png", filename: 'anita_magsaysay_bgx.png', content_type: 'image/png')
+      @product.gen_image_from_path(path:"D:\\src\\image-background-remove-tool\\docs\\imgss\\outputt\\"+filename+".png", filename: filename+'.png', content_type: 'image/png')
     end
 
-
-    # return render json: {success: true, message: "hello world!"}
-    return render json: "hello world!"
+    respond_to do |format|
+      format.html { redirect_to @product, notice: "Product was successfully converted." }
+      format.json { head :no_content }
+    end
 
   end
 
