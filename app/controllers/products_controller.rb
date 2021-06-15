@@ -1,6 +1,6 @@
 class ProductsController < ApplicationController
   before_action :set_product, only: %i[ show edit update destroy conservative_convert generous_convert]
-  skip_before_action :verify_authenticity_token, only: [:create]
+  skip_before_action :verify_authenticity_token, only: [:create_and_convert]
 
   # GET /products or /products.json
   def index
@@ -35,6 +35,39 @@ class ProductsController < ApplicationController
     end
   end
 
+  # POST /products or /products.json
+  def create_and_convert
+
+    #validate user app token here
+
+    mode=params["mode"]
+    success=false
+    @product = Product.new(product_params)
+
+    respond_to do |format|
+      if @product.save
+        format.html { redirect_to @product, notice: "Product was successfully created." }
+        format.json {
+          if mode && mode=="c"
+            success=@product.conservative_convert
+          else
+            success=@product.generous_convert
+          end
+          if success
+            return render json: {success: true, data: {
+              image_url: Rails.application.routes.url_helpers.rails_blob_path(@product.converted_image, only_path: true),
+            }}
+          else
+            return render json: {success: false}
+            end
+        }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @product.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   # PATCH/PUT /products/1 or /products/1.json
   def update
     respond_to do |format|
@@ -58,48 +91,41 @@ class ProductsController < ApplicationController
   end
 
   def conservative_convert
-    #formulate source image path
-    rails_path= Dir.pwd
-    image=@product.image
-    filename=image.blob.key
-    path=rails_path+"/storage/"+filename[0,2]+"/"+filename[2,2]+"/"+filename
-    #path = d:/src/picmanRails/storage/6a/3w/6a3wn80hov9h1nx3pct9qrli8ynk
-
-    # remove background from source image
-    success=system("cd D:\\src\\image-background-remove-tool & python3 main.py -i "+path+" -o .\\docs\\imgss\\outputt\\ -m u2net")
-    if(success)
-      # attach image with background removed
-      @product.gen_image_from_path(path:"D:\\src\\image-background-remove-tool\\docs\\imgss\\outputt\\"+filename+".png", filename: filename+'.png', content_type: 'image/png')
+    success=@product.conservative_convert
+    if success
+      respond_to do |format|
+        format.html { redirect_to @product, notice: "Image was successfully converted." }
+        format.json {
+          return render json: {success: true, data: {
+            image_url: Rails.application.routes.url_helpers.rails_blob_path(@product.converted_image, only_path: true),
+          }}}
+        end
+    else
+      respond_to do |format|
+        format.html { redirect_to @product, notice: "Error converting image." }
+        return render json: {success: false}
+        end
     end
-
-    respond_to do |format|
-      format.html { redirect_to @product, notice: "Product was successfully converted." }
-      format.json { head :no_content }
-    end
-
   end
 
   def generous_convert
-    #formulate source image path
-    rails_path= Dir.pwd
-    image=@product.image
-    filename=image.blob.key
-    path=rails_path+"/storage/"+filename[0,2]+"/"+filename[2,2]+"/"+filename
-    #path = d:/src/picmanRails/storage/6a/3w/6a3wn80hov9h1nx3pct9qrli8ynk
-
-    # remove background from source image
-    success=system("cd D:\\src\\image-background-removal & python3 seg.py "+path+" output\\"+filename+".png"+" 1")
-    if(success)
-      # attach image with background removed
-      @product.gen_image_from_path(path:"D:\\src\\image-background-removal\\output\\"+filename+".png", filename: filename+'.png', content_type: 'image/png')
+    success=@product.generous_convert
+    if success
+      respond_to do |format|
+        format.html { redirect_to @product, notice: "Image was successfully converted." }
+        format.json {
+          return render json: {success: true, data: {
+            image_url: Rails.application.routes.url_helpers.rails_blob_path(@product.converted_image, only_path: true),
+          }}}
+        end
+    else
+      respond_to do |format|
+        format.html { redirect_to @product, notice: "Error converting image." }
+        return render json: {success: false}
+        end
     end
-
-    respond_to do |format|
-      format.html { redirect_to @product, notice: "Product was successfully converted." }
-      format.json { head :no_content }
-    end
-
   end
+
 
   private
     # Use callbacks to share common setup or constraints between actions.
