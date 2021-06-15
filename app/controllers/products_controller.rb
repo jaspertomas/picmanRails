@@ -60,8 +60,8 @@ class ProductsController < ApplicationController
   def convert
     #formulate source image path
     rails_path= Dir.pwd
-    image=@product.images[0]
-    filename=image.image.blob.key
+    image=@product.image
+    filename=image.blob.key
     path=rails_path+"/storage/"+filename[0,2]+"/"+filename[2,2]+"/"+filename
     #path = d:/src/picmanRails/storage/6a/3w/6a3wn80hov9h1nx3pct9qrli8ynk
 

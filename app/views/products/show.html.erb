@@ -10,6 +10,9 @@
   <% if @product.image.attached?  %>
     <image src="<%=(url_for(@product.image))%>">
   <% end %>
+  <% if @product.converted_image.attached?  %>
+    <image src="<%=(url_for(@product.converted_image))%>">
+  <% end %>
   
 </p>
 
