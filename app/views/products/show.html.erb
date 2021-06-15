@@ -5,14 +5,14 @@
   <%= @product.name %>
   
 </p>
-
-<ul>
-  <% @product.images.each do |image| %>
-    <li>
-      <img src="<%=url_for(image.image)%>">
-    </li>
+<p>
+  <strong>Image:</strong>
+  <% if @product.image.attached?  %>
+    <image src="<%=(url_for(@product.image))%>">
   <% end %>
-</ul>
+  
+</p>
+
 
 <%= link_to 'Convert', convert_product_path(@product) %> |
 <%= link_to 'Edit', edit_product_path(@product) %> |

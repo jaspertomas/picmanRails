@@ -1,5 +1,6 @@
 class Product < ApplicationRecord
-    has_many :images, as: :imagable
+    # has_many :images, as: :imagable
+    has_one_attached :image
 
     def last_image
 		images=self.images.where(is_published:true)
