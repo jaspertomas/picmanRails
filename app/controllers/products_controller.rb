@@ -1,5 +1,6 @@
 class ProductsController < ApplicationController
   before_action :set_product, only: %i[ show edit update destroy convert]
+  skip_before_action :verify_authenticity_token, only: [:create]
 
   # GET /products or /products.json
   def index
