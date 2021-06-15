@@ -1,5 +1,5 @@
 class ProductsController < ApplicationController
-  before_action :set_product, only: %i[ show edit update destroy convert]
+  before_action :set_product, only: %i[ show edit update destroy conservative_convert generous_convert]
   skip_before_action :verify_authenticity_token, only: [:create]
 
   # GET /products or /products.json
@@ -57,7 +57,7 @@ class ProductsController < ApplicationController
     end
   end
 
-  def convert
+  def conservative_convert
     #formulate source image path
     rails_path= Dir.pwd
     image=@product.image
@@ -70,6 +70,28 @@ class ProductsController < ApplicationController
     if(success)
       # attach image with background removed
       @product.gen_image_from_path(path:"D:\\src\\image-background-remove-tool\\docs\\imgss\\outputt\\"+filename+".png", filename: filename+'.png', content_type: 'image/png')
+    end
+
+    respond_to do |format|
+      format.html { redirect_to @product, notice: "Product was successfully converted." }
+      format.json { head :no_content }
+    end
+
+  end
+
+  def generous_convert
+    #formulate source image path
+    rails_path= Dir.pwd
+    image=@product.image
+    filename=image.blob.key
+    path=rails_path+"/storage/"+filename[0,2]+"/"+filename[2,2]+"/"+filename
+    #path = d:/src/picmanRails/storage/6a/3w/6a3wn80hov9h1nx3pct9qrli8ynk
+
+    # remove background from source image
+    success=system("cd D:\\src\\image-background-removal & python3 seg.py "+path+" "+filename+".png"+" 1")
+    if(success)
+      # attach image with background removed
+      @product.gen_image_from_path(path:"D:\\src\\image-background-removal\\"+filename+".png", filename: filename+'.png', content_type: 'image/png')
     end
 
     respond_to do |format|
