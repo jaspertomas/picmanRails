@@ -53,7 +53,10 @@ class Product < ApplicationRecord
         #path = d:/src/picmanRails/storage/6a/3w/6a3wn80hov9h1nx3pct9qrli8ynk
     
         # remove background from source image
-        success=system("cd D:\\src\\image-background-removal & python3 seg.py "+path+" output\\"+filename+".png"+" 1")
+        #hi quality version
+        #success=system("cd D:\\src\\image-background-removal & python3 seg.py "+path+" output\\"+filename+".png"+" 1")
+        #low quality version
+        success=system("cd D:\\src\\image-background-removal & python3 seg.py "+path+" output\\"+filename+".png")
         if(success)
           # attach image with background removed
           self.gen_converted_image_from_path(path:"D:\\src\\image-background-removal\\output\\"+filename+".png", filename: filename+'.png', content_type: 'image/png')
