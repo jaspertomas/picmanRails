@@ -36,10 +36,10 @@ class Product < ApplicationRecord
         #path = d:/src/picmanRails/storage/6a/3w/6a3wn80hov9h1nx3pct9qrli8ynk
     
         # remove background from source image
-        success=system("cd D:\\src\\image-background-remove-tool & python3 main.py -i "+path+" -o .\\docs\\imgss\\outputt\\ -m u2net")
+        success=IO.popen("cd "+Constants.image_background_remove_tool_path+" && python3 main.py -i "+path+" -o ./docs/imgs/output/ -m u2net")
         if(success)
           # attach image with background removed
-          self.gen_converted_image_from_path(path:"D:\\src\\image-background-remove-tool\\docs\\imgss\\outputt\\"+filename+".png", filename: filename+'.png', content_type: 'image/png')
+          self.gen_converted_image_from_path(path:"D:/src/image-background-remove-tool/docs/imgs/output/"+filename+".png", filename: filename+'.png', content_type: 'image/png')
         end
         return success
       end
@@ -54,15 +54,28 @@ class Product < ApplicationRecord
     
         # remove background from source image
         #hi quality version
-        #success=system("cd D:\\src\\image-background-removal & python3 seg.py "+path+" output\\"+filename+".png"+" 1")
+        # success=IO.popen("cd "+Constants::IMAGE_BACKGROUND_REMOVAL_PATH+" && python3 seg.py "+path+" output/"+filename+".png"+" 1")        
         #low quality version
-        success=system("cd D:\\src\\image-background-removal & python3 seg.py "+path+" output\\"+filename+".png")
+        IO.popen("cd "+Constants::IMAGE_BACKGROUND_REMOVAL_PATH+" && python3 seg.py "+path+" output/"+filename+".png")
+
+        #file generation is delayed
+        #every second for 10 seconds
+        #check if output file exist
+        success=false
+        output_file=Constants::IMAGE_BACKGROUND_REMOVAL_PATH+"/output/"+filename+".png"
+        (1..10).each do |i|
+          if File.exist?(output_file) 
+            success=true
+            break
+          else
+            sleep(1.second)
+          end
+        end
+
         if(success)
           # attach image with background removed
-          self.gen_converted_image_from_path(path:"D:\\src\\image-background-removal\\output\\"+filename+".png", filename: filename+'.png', content_type: 'image/png')
+          self.gen_converted_image_from_path(path:Constants::IMAGE_BACKGROUND_REMOVAL_PATH+"/output/"+filename+".png", filename: filename+'.png', content_type: 'image/png')
         end
         return success
       end
-    
-  
 end
