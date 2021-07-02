@@ -36,7 +36,10 @@ class Product < ApplicationRecord
         #path = d:/src/picmanRails/storage/6a/3w/6a3wn80hov9h1nx3pct9qrli8ynk
     
         # remove background from source image
-        IO.popen("cd "+Constants::IMAGE_BACKGROUND_REMOVE_TOOL_PATH+" && python3 main.py -i "+path+" -o ./docs/imgs/output/ -m u2net")
+        #low setting
+        IO.popen("cd "+Constants::IMAGE_BACKGROUND_REMOVE_TOOL_PATH+" && python3 main.py -i "+path+" -o ./docs/imgs/output/ -m u2net"+" 1")
+        #high setting
+        #IO.popen("cd "+Constants::IMAGE_BACKGROUND_REMOVE_TOOL_PATH+" && python3 main.py -i "+path+" -o ./docs/imgs/output/ -m u2net"+" 1")
 
         #file generation is delayed
         #every second for 10 seconds
